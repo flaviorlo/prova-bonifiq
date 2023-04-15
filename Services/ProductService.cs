@@ -1,20 +1,29 @@
-﻿using ProvaPub.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using ProvaPub.Models;
 using ProvaPub.Repository;
+using ProvaPub.Services.IServices;
+using System;
 
 namespace ProvaPub.Services
 {
-	public class ProductService
+	public class ProductService: IProductService
 	{
-		TestDbContext _ctx;
+        private readonly TestDbContext _ctx;
 
-		public ProductService(TestDbContext ctx)
-		{
-			_ctx = ctx;
-		}
+        public ProductService(TestDbContext ctx) 
+        {            
+            _ctx = ctx;
+        }
 
-		public ProductList  ListProducts(int page)
+		public ItemsList ListProducts(int page)
 		{
-			return new ProductList() {  HasNext=false, TotalCount =10, Products = _ctx.Products.ToList() };
+			int TotalCount = 10;
+
+            return new ItemsList() {  HasNext=false, Products = _ctx.Products
+																			   .Skip(TotalCount * page)
+																			   .Take(TotalCount)
+																			   .ToList() };
 		}
 
 	}
